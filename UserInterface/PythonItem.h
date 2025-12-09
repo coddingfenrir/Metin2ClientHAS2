@@ -81,7 +81,9 @@ class CPythonItem : public CSingleton<CPythonItem>
 		void	PlayUseSound(DWORD dwItemID);
 		void	PlayDropSound(DWORD dwItemID);
 		void	PlayUsePotionSound();
-
+#if defined(__BL_PICK_FILTER__)
+		std::vector<DWORD> GetCloseItemVector(const std::string& myName, const TPixelPosition& c_rPixelPosition);
+#endif
 		void	SetUseSoundFileName(DWORD eItemType, const std::string& c_rstFileName);
 		void	SetDropSoundFileName(DWORD eItemType, const std::string& c_rstFileName);
 

@@ -3,7 +3,7 @@
 #include "../gamelib/ItemManager.h"
 #include "../EffectLib/EffectManager.h"
 #include "PythonBackground.h"
-
+#include "PythonPlayer.h"
 #include "pythonitem.h"
 #include "PythonTextTail.h"
 
@@ -606,7 +606,37 @@ bool CPythonItem::GetCloseItem(const TPixelPosition & c_rPixelPosition, DWORD * 
 
 	return true;
 }
+#if defined(__BL_PICK_FILTER__)
 
+
+std::vector<DWORD> CPythonItem::GetCloseItemVector(const std::string& myName, const TPixelPosition& c_rPixelPosition)
+{
+	std::vector<DWORD> itemVidList;
+
+	static const float fCloseItemDistance = std::powf(1000.0f, 2);
+
+	for (const auto& v : CPythonItem::m_GroundItemInstanceMap) {
+		TGroundItemInstance* pInstance = v.second;
+		if (!pInstance)
+			continue;
+
+		if (!pInstance->stOwnership.empty() && pInstance->stOwnership.compare(myName)
+			&& !CPythonPlayer::Instance().IsPartyMemberByName(pInstance->stOwnership.c_str()))
+			continue;
+        // Add this include at the top of the file, after other includes
+		const float fxDistance = c_rPixelPosition.x - pInstance->v3EndPosition.x;
+		const float fyDistance = c_rPixelPosition.y + pInstance->v3EndPosition.y;
+		const float fDistance = std::powf(fxDistance, 2) + std::powf(fyDistance, 2);
+
+		if (fDistance >= fCloseItemDistance)
+			continue;
+
+		itemVidList.emplace_back(v.first);
+	}
+
+	return itemVidList;
+}
+#endif
 BOOL CPythonItem::GetGroundItemPosition(DWORD dwVirtualID, TPixelPosition * pPosition)
 {
 	TGroundItemInstanceMap::iterator itor = m_GroundItemInstanceMap.find(dwVirtualID);
@@ -713,4 +743,5 @@ CPythonItem::~CPythonItem()
 {
 	assert(m_GroundItemInstanceMap.empty());
 }
+
 //martysama0134's cc449580f8a0ea79d66107125c7ee3d3

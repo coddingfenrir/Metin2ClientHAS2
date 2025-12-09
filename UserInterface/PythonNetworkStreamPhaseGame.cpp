@@ -2210,7 +2210,12 @@ void CPythonNetworkStream::ToggleGameDebugInfo()
 {
 	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "ToggleDebugInfo", Py_BuildValue("()"));
 }
-
+#if defined(__BL_PICK_FILTER__)
+void CPythonNetworkStream::OpenPickUpWindow()
+{
+	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "OpenPickUpWindow", Py_BuildValue("()"));
+}
+#endif
 bool CPythonNetworkStream::SendExchangeStartPacket(DWORD vid)
 {
 	if (!__CanActMainInstance())

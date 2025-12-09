@@ -851,7 +851,15 @@ PyObject* netSendItemMovePacket(PyObject* poSelf, PyObject* poArgs)
 	rkNetStream.SendItemMovePacket(Cell, ChangeCell, (BYTE) num);
 	return Py_BuildNone();
 }
+#if defined(__BL_PICK_FILTER__)
+PyObject* netOpenPickUpWindow(PyObject* poSelf, PyObject* poArgs)
+{
+	CPythonNetworkStream& rkNetStream = CPythonNetworkStream::Instance();
+	rkNetStream.OpenPickUpWindow();
 
+	return Py_BuildNone();
+}
+#endif
 PyObject* netSendItemPickUpPacket(PyObject* poSelf, PyObject* poArgs)
 {
 	int vid;
@@ -1717,6 +1725,9 @@ void initnet()
 		// END_OF_FIELD_MUSIC
 
 		{ "ToggleGameDebugInfo",				netToggleGameDebugInfo,					METH_VARARGS },
+		#if defined(__BL_PICK_FILTER__)
+		{ "OpenPickUpWindow",					netOpenPickUpWindow,					METH_VARARGS },
+#endif
 #ifdef ENABLE_TARGET_INFORMATION_SYSTEM
 		{ "SendTargetInfoLoad", 				netTargetInfoLoad, 						METH_VARARGS },
 #endif

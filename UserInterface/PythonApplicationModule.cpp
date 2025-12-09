@@ -1520,6 +1520,11 @@ void initapp()
 #else
 	PyModule_AddIntConstant(poModule, "ENABLE_COSTUME_SYSTEM",	0);
 #endif
+#if defined(__BL_PICK_FILTER__)
+	PyModule_AddIntConstant(poModule, "__BL_PICK_FILTER__", true);
+#else
+	PyModule_AddIntConstant(poModule, "__BL_PICK_FILTER__", false);
+#endif
 #ifdef ENABLE_NEW_BIOLOG
 	PyModule_AddIntConstant(poModule, "ENABLE_NEW_BIOLOG", 1);
 #else

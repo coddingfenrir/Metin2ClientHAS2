@@ -861,5 +861,299 @@ void CPythonSystem::SaveChatFilterSettings() const
 	fclose(f);
 }
 #endif
+#if defined(__BL_PICK_FILTER__)
+#include <fstream>
 
+CPythonSystem::CPickUpFilter::CPickUpFilter()
+{
+	///// READ ////
+	std::ifstream inputFile;
+	inputFile.open(cPickUpFilterFileName, std::ios::binary);
+	if (inputFile.is_open())
+	{
+		inputFile.read(reinterpret_cast<char*>(bPickFilter), sizeof(bool) * EPICKFILTER::EPICKFILTER_MAX);
+		inputFile.read(reinterpret_cast<char*>(bPickSize), sizeof(bool) * ESIZE::ESIZE_MAX);
+		inputFile.read(reinterpret_cast<char*>(&bModeAll), sizeof(bool));
+		inputFile.read(reinterpret_cast<char*>(&m_bRefineMin), sizeof(BYTE));
+		inputFile.read(reinterpret_cast<char*>(&m_bRefineMax), sizeof(BYTE));
+		inputFile.read(reinterpret_cast<char*>(&m_lLevelMin), sizeof(long));
+		inputFile.read(reinterpret_cast<char*>(&m_lLevelMax), sizeof(long));
+
+		inputFile.close();
+	}
+	else
+	{
+		///// SET DEFAULT ////
+		std::fill(std::begin(bPickFilter), std::end(bPickFilter), true);
+		std::fill(std::begin(bPickSize), std::end(bPickSize), true);
+
+		bModeAll = false;
+
+		m_bRefineMin = 0;
+		m_bRefineMax = 9;
+
+		m_lLevelMin = 0;
+		m_lLevelMax = 999;
+	}
+}
+
+CPythonSystem::CPickUpFilter::~CPickUpFilter()
+{
+	///// SAVE ////
+	std::ofstream outputFile;
+	outputFile.open(cPickUpFilterFileName, std::ios::binary);
+	if (outputFile.is_open())
+	{
+		outputFile.write(reinterpret_cast<char*>(bPickFilter), sizeof(bool) * EPICKFILTER::EPICKFILTER_MAX);
+		outputFile.write(reinterpret_cast<char*>(bPickSize), sizeof(bool) * ESIZE::ESIZE_MAX);
+		outputFile.write(reinterpret_cast<char*>(&bModeAll), sizeof(bool));
+		outputFile.write(reinterpret_cast<char*>(&m_bRefineMin), sizeof(BYTE));
+		outputFile.write(reinterpret_cast<char*>(&m_bRefineMax), sizeof(BYTE));
+		outputFile.write(reinterpret_cast<char*>(&m_lLevelMin), sizeof(long));
+		outputFile.write(reinterpret_cast<char*>(&m_lLevelMax), sizeof(long));
+
+		outputFile.close();
+	}
+	else
+	{
+		Tracenf("CPickUpFilter::~CPickUpFilter() Cannot create a file for save settings.");
+	}
+}
+
+void CPythonSystem::CPickUpFilter::SetFilter(size_t sIndex, bool b)
+{
+	if (sIndex >= EPICKFILTER::EPICKFILTER_MAX)
+	{
+		Tracenf("CPickUpFilter::SetFilter(Index=%d) : Out of range", sIndex);
+		return;
+	}
+
+	bPickFilter[sIndex] = b;
+}
+
+void CPythonSystem::CPickUpFilter::SetSize(size_t sIndex, bool b)
+{
+	if (sIndex >= ESIZE::ESIZE_MAX)
+	{
+		Tracenf("CPickUpFilter::SetSize(Index=%d) : Out of range", sIndex);
+		return;
+	}
+
+	if (sIndex == ESIZE::BIG && b == false)
+		SetFilter(EPICKFILTER::SUB_WEAPON_TWO_HANDED, false);
+
+	bPickSize[sIndex] = b;
+}
+
+void CPythonSystem::CPickUpFilter::SetRefine(BYTE min, BYTE max)
+{
+	m_bRefineMin = static_cast<BYTE>(MINMAX(0, min, 9));
+	m_bRefineMax = static_cast<BYTE>(MINMAX(0, max, 9));
+}
+
+void CPythonSystem::CPickUpFilter::SetLevel(long min, long max)
+{
+	m_lLevelMin = MINMAX(0, min, 999);
+	m_lLevelMax = MINMAX(0, max, 999);
+}
+
+void CPythonSystem::CPickUpFilter::SetModeAll(bool b)
+{
+	bModeAll = b;
+}
+
+bool CPythonSystem::CPickUpFilter::CanPickItem(DWORD dwIID)
+{
+	CItemData* pItemData;
+	if (!CItemManager::Instance().GetItemDataPointer(CPythonItem::Instance().GetVirtualNumberOfGroundItem(dwIID), &pItemData))
+	{
+		Tracenf("CPickUpFilter::CanPickItem(dwIID=%d) : Non-exist item.", dwIID);
+		return true;
+	}
+
+	if (CheckRefine(pItemData) == false)
+		return false;
+
+	if (CheckLevel(pItemData) == false)
+		return false;
+
+	if (CheckSize(pItemData) == false)
+		return false;
+
+	if (CheckType(pItemData) == false)
+		return false;
+
+	return true;
+}
+
+std::pair<BYTE, BYTE> CPythonSystem::CPickUpFilter::GetRefine()
+{
+	return std::make_pair(m_bRefineMin, m_bRefineMax);
+}
+
+std::pair<long, long> CPythonSystem::CPickUpFilter::GetLevel()
+{
+	return std::make_pair(m_lLevelMin, m_lLevelMax);
+}
+
+bool CPythonSystem::CPickUpFilter::GetFilter(size_t sIndex) const
+{
+	if (sIndex >= EPICKFILTER::EPICKFILTER_MAX)
+	{
+		Tracenf("CPickUpFilter::GetFilter(Index=%d) : Out of range", sIndex);
+		return false;
+	}
+
+	return bPickFilter[sIndex];
+}
+
+bool CPythonSystem::CPickUpFilter::GetSize(size_t sIndex) const
+{
+	if (sIndex >= ESIZE::ESIZE_MAX)
+	{
+		Tracenf("CPickUpFilter::GetSize(Index=%d) : Out of range", sIndex);
+		return false;
+	}
+
+	return bPickSize[sIndex];
+}
+
+bool CPythonSystem::CPickUpFilter::IsModeAll() const
+{
+	return bModeAll;
+}
+
+bool CPythonSystem::CPickUpFilter::CheckRefine(const CItemData* pItem) const
+{
+	const BYTE bRefineLevel = static_cast<BYTE>(pItem->GetRefine());
+	if (bRefineLevel >= m_bRefineMin && bRefineLevel <= m_bRefineMax)
+		return true;
+
+	return false;
+}
+
+bool CPythonSystem::CPickUpFilter::CheckLevel(const CItemData* pItem) const
+{
+	CItemData::TItemLimit ItemLimit;
+	for (BYTE i = 0; i < CItemData::ITEM_LIMIT_MAX_NUM; i++)
+	{
+		if (!pItem->GetLimit(i, &ItemLimit))
+			continue;
+
+		if (ItemLimit.bType != CItemData::LIMIT_LEVEL)
+			continue;
+
+		const long lLimitLevel = ItemLimit.lValue;
+		return (lLimitLevel >= m_lLevelMin && lLimitLevel <= m_lLevelMax);
+	}
+
+	return true;
+}
+
+bool CPythonSystem::CPickUpFilter::CheckSize(const CItemData* pItem) const
+{
+	return GetSize(pItem->GetSize() - 1);
+}
+
+bool CPythonSystem::CPickUpFilter::CheckType(const CItemData* pItem) const
+{
+	const BYTE bType = pItem->GetType();
+	const BYTE bSubType = pItem->GetSubType();
+
+	switch (bType)
+	{
+	case CItemData::EItemType::ITEM_TYPE_WEAPON:
+		switch (bSubType)
+		{
+		case CItemData::EWeaponSubTypes::WEAPON_SWORD:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_SWORD);
+
+		case CItemData::EWeaponSubTypes::WEAPON_DAGGER:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_DAGGER);
+
+		case CItemData::EWeaponSubTypes::WEAPON_BOW:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_BOW);
+
+		case CItemData::EWeaponSubTypes::WEAPON_TWO_HANDED:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_TWO_HANDED);
+
+		case CItemData::EWeaponSubTypes::WEAPON_BELL:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_BELL);
+
+		case CItemData::EWeaponSubTypes::WEAPON_FAN:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_FAN);
+
+		case CItemData::EWeaponSubTypes::WEAPON_ARROW:
+			return GetFilter(EPICKFILTER::SUB_WEAPON_ARROW);
+
+			/*case CItemData::EWeaponSubTypes::WEAPON_MOUNT_SPEAR:
+				return GetFilter(EPICKFILTER::SUB_WEAPON_MOUNT_SPEAR);*/
+		}
+		break;
+
+	case CItemData::EItemType::ITEM_TYPE_ARMOR:
+		switch (bSubType)
+		{
+		case CItemData::EArmorSubTypes::ARMOR_BODY:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_BODY);
+
+		case CItemData::EArmorSubTypes::ARMOR_HEAD:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_HEAD);
+
+		case CItemData::EArmorSubTypes::ARMOR_SHIELD:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_SHIELD);
+
+		case CItemData::EArmorSubTypes::ARMOR_WRIST:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_WRIST);
+
+		case CItemData::EArmorSubTypes::ARMOR_FOOTS:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_FOOTS);
+
+		case CItemData::EArmorSubTypes::ARMOR_NECK:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_NECK);
+
+		case CItemData::EArmorSubTypes::ARMOR_EAR:
+			return GetFilter(EPICKFILTER::SUB_ARMOR_EAR);
+		}
+		break;
+
+	case CItemData::EItemType::ITEM_TYPE_METIN:
+		return GetFilter(EPICKFILTER::TYPE_METIN);
+
+	case CItemData::EItemType::ITEM_TYPE_ELK:
+		return GetFilter(EPICKFILTER::TYPE_YANG);
+
+	case CItemData::EItemType::ITEM_TYPE_SKILLBOOK:
+		return GetFilter(EPICKFILTER::TYPE_SKILLBOOK);
+
+	case CItemData::EItemType::ITEM_TYPE_GIFTBOX:
+		return GetFilter(EPICKFILTER::TYPE_GIFTBOX);
+
+	case CItemData::EItemType::ITEM_TYPE_BELT:
+		return GetFilter(EPICKFILTER::TYPE_BELT);
+
+	case CItemData::EItemType::ITEM_TYPE_POLYMORPH:
+		return GetFilter(EPICKFILTER::TYPE_POLY);
+
+	case CItemData::EItemType::ITEM_TYPE_RING:
+		return GetFilter(EPICKFILTER::TYPE_RING);
+
+	case CItemData::EItemType::ITEM_TYPE_USE:
+		switch (bSubType)
+		{
+		case CItemData::EUseSubTypes::USE_POTION:
+		case CItemData::EUseSubTypes::USE_ABILITY_UP:
+		case CItemData::EUseSubTypes::USE_POTION_NODELAY:
+		case CItemData::EUseSubTypes::USE_POTION_CONTINUE:
+			return GetFilter(EPICKFILTER::SUB_POTION);
+		}
+		break;
+
+	case CItemData::EItemType::ITEM_TYPE_MATERIAL:
+		return GetFilter(EPICKFILTER::TYPE_MATERIAL);
+	}
+
+	return true;
+}
+#endif
 

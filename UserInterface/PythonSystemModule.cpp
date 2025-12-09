@@ -549,7 +549,115 @@ PyObject* systemSetShopRangeView(PyObject* poSelf, PyObject* poArgs)
 }
 #	endif
 #endif
+#if defined(__BL_PICK_FILTER__)
+PyObject* systemSetPickUpFilter(PyObject* poSelf, PyObject* poArgs)
+{
+	int iIndex;
+	if (!PyTuple_GetInteger(poArgs, 0, &iIndex))
+		return Py_BuildException();
 
+	const bool bFilter = CPythonSystem::Instance().TPickUpFilter.GetFilter(iIndex);
+	CPythonSystem::Instance().TPickUpFilter.SetFilter(iIndex, !bFilter);
+
+	return Py_BuildNone();
+}
+
+PyObject* systemGetPickUpFilter(PyObject* poSelf, PyObject* poArgs)
+{
+	int iIndex;
+	if (!PyTuple_GetInteger(poArgs, 0, &iIndex))
+		return Py_BuildException();
+
+	const bool bFilter = CPythonSystem::Instance().TPickUpFilter.GetFilter(iIndex);
+
+	return Py_BuildValue("i", bFilter);
+}
+
+PyObject* systemSetPickUpFilterSize(PyObject* poSelf, PyObject* poArgs)
+{
+	int iIndex;
+	if (!PyTuple_GetInteger(poArgs, 0, &iIndex))
+		return Py_BuildException();
+
+	const bool bSize = CPythonSystem::Instance().TPickUpFilter.GetSize(iIndex);
+	CPythonSystem::Instance().TPickUpFilter.SetSize(iIndex, !bSize);
+
+	return Py_BuildNone();
+}
+
+PyObject* systemGetPickUpFilterSize(PyObject* poSelf, PyObject* poArgs)
+{
+	int iIndex;
+	if (!PyTuple_GetInteger(poArgs, 0, &iIndex))
+		return Py_BuildException();
+
+	const bool bSize = CPythonSystem::Instance().TPickUpFilter.GetSize(iIndex);
+
+	return Py_BuildValue("i", bSize);
+}
+
+PyObject* systemSetPickUpFilterRefine(PyObject* poSelf, PyObject* poArgs)
+{
+	BYTE bMin;
+	if (!PyTuple_GetByte(poArgs, 0, &bMin))
+		return Py_BuildException();
+
+	BYTE bMax;
+	if (!PyTuple_GetByte(poArgs, 1, &bMax))
+		return Py_BuildException();
+
+	CPythonSystem::Instance().TPickUpFilter.SetRefine(bMin, bMax);
+
+	return Py_BuildNone();
+}
+
+PyObject* systemGetPickUpFilterRefine(PyObject* poSelf, PyObject* poArgs)
+{
+	const std::pair<BYTE, BYTE> pRefine = CPythonSystem::Instance().TPickUpFilter.GetRefine();
+
+	return Py_BuildValue("ii", pRefine.first, pRefine.second);
+}
+
+PyObject* systemSetPickUpFilterLevel(PyObject* poSelf, PyObject* poArgs)
+{
+	long lMin;
+	if (!PyTuple_GetLong(poArgs, 0, &lMin))
+		return Py_BuildException();
+
+	long lMax;
+	if (!PyTuple_GetLong(poArgs, 1, &lMax))
+		return Py_BuildException();
+
+	CPythonSystem::Instance().TPickUpFilter.SetLevel(lMin, lMax);
+
+	return Py_BuildNone();
+}
+
+PyObject* systemGetPickUpFilterLevel(PyObject* poSelf, PyObject* poArgs)
+{
+	const std::pair<long, long> pLevel = CPythonSystem::Instance().TPickUpFilter.GetLevel();
+
+	return Py_BuildValue("ii", pLevel.first, pLevel.second);
+}
+
+PyObject* systemSetPickUpFilterModeAll(PyObject* poSelf, PyObject* poArgs)
+{
+	bool bAll;
+	if (!PyTuple_GetBoolean(poArgs, 0, &bAll))
+		return Py_BuildException();
+
+	CPythonSystem::Instance().TPickUpFilter.SetModeAll(bAll);
+
+	return Py_BuildNone();
+}
+
+PyObject* systemGetPickUpFilterModeAll(PyObject* poSelf, PyObject* poArgs)
+{
+	const bool bAll = CPythonSystem::Instance().TPickUpFilter.IsModeAll();
+
+	return Py_BuildValue("i", bAll);
+}
+#endif
 void initsystemSetting()
 {
 	static PyMethodDef s_methods[] =
@@ -603,6 +711,22 @@ void initsystemSetting()
 
 		{ "GetShadowLevel",				systemGetShadowLevel,			METH_VARARGS },
 		{ "SetShadowLevel",				systemSetShadowLevel,			METH_VARARGS },
+#if defined(__BL_PICK_FILTER__)
+		{ "SetPickUpFilter",			systemSetPickUpFilter,			METH_VARARGS },
+		{ "GetPickUpFilter",			systemGetPickUpFilter,			METH_VARARGS },
+
+		{ "SetPickUpFilterSize",		systemSetPickUpFilterSize,		METH_VARARGS },
+		{ "GetPickUpFilterSize",		systemGetPickUpFilterSize,		METH_VARARGS },
+
+		{ "SetPickUpFilterRefine",		systemSetPickUpFilterRefine,	METH_VARARGS },
+		{ "GetPickUpFilterRefine",		systemGetPickUpFilterRefine,	METH_VARARGS },
+
+		{ "SetPickUpFilterLevel",		systemSetPickUpFilterLevel,		METH_VARARGS },
+		{ "GetPickUpFilterLevel",		systemGetPickUpFilterLevel,		METH_VARARGS },
+
+		{ "SetPickUpFilterModeAll",		systemSetPickUpFilterModeAll,	METH_VARARGS },
+		{ "GetPickUpFilterModeAll",		systemGetPickUpFilterModeAll,	METH_VARARGS },
+#endif
 
 #ifdef WJ_SHOW_MOB_INFO
 		{ "IsShowMobAIFlag",			systemIsShowMobAIFlag,			METH_VARARGS },
@@ -638,6 +762,7 @@ void initsystemSetting()
 #endif
 
 		{ NULL,							NULL,							NULL }
+
 	};
 
 	PyObject * poModule = Py_InitModule("systemSetting", s_methods);
@@ -653,5 +778,9 @@ void initsystemSetting()
 	PyModule_AddIntConstant(poModule, "WINDOW_GAUGE",		CPythonSystem::WINDOW_GAUGE);
 	PyModule_AddIntConstant(poModule, "WINDOW_MINIMAP",		CPythonSystem::WINDOW_MINIMAP);
 	PyModule_AddIntConstant(poModule, "WINDOW_CHAT",		CPythonSystem::WINDOW_CHAT);
+	#if defined(__BL_PICK_FILTER__)
+	PyModule_AddIntConstant(poModule, "PICKUP_FILTER_COUNT", CPythonSystem::CPickUpFilter::EPICKFILTER::EPICKFILTER_MAX);
+	PyModule_AddIntConstant(poModule, "PICKUP_FILTER_SIZE_COUNT", CPythonSystem::CPickUpFilter::ESIZE::ESIZE_MAX);
+	#endif
 }
-//martysama0134's 2e58d0b8baeb072acdf3afc4a5d1999f
+

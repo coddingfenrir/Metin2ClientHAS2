@@ -25,6 +25,97 @@ class CPythonSystem : public CSingleton<CPythonSystem>
 			FREQUENCY_MAX_NUM  = 30,
 			RESOLUTION_MAX_NUM = 100
 		};
+#if defined(__BL_PICK_FILTER__)
+		class CPickUpFilter
+		{
+		public:
+			CPickUpFilter();
+			~CPickUpFilter();
+
+			void	SetFilter(size_t sIndex, bool b);
+			void	SetSize(size_t sIndex, bool b);
+			void	SetRefine(BYTE min, BYTE max);
+			void	SetLevel(long min, long max);
+			void	SetModeAll(bool b);
+
+			bool	CanPickItem(DWORD dwIID);
+
+			bool	GetFilter(size_t sIndex) const;
+			bool	GetSize(size_t sIndex) const;
+			bool	IsModeAll() const;
+
+			std::pair<BYTE, BYTE> GetRefine();
+			std::pair<long, long> GetLevel();
+
+		private:
+			bool	CheckRefine(const CItemData* pItem) const;
+			bool	CheckLevel(const CItemData* pItem) const;
+			bool	CheckSize(const CItemData* pItem) const;
+			bool	CheckType(const CItemData* pItem) const;
+
+			static constexpr const char* cPickUpFilterFileName = "PickUpFilter.dat";
+
+		public:
+			enum EPICKFILTER
+			{
+				/*WEAPON-SUB*/
+				SUB_WEAPON_SWORD,
+				SUB_WEAPON_DAGGER,
+				SUB_WEAPON_BOW,
+				SUB_WEAPON_TWO_HANDED,
+				SUB_WEAPON_BELL,
+				SUB_WEAPON_FAN,
+				SUB_WEAPON_ARROW,
+				//SUB_WEAPON_MOUNT_SPEAR,
+				/*WEAPON-SUB*/
+
+				/*ARMOR-SUB*/
+				SUB_ARMOR_BODY,
+				SUB_ARMOR_HEAD,
+				SUB_ARMOR_SHIELD,
+				SUB_ARMOR_WRIST,
+				SUB_ARMOR_FOOTS,
+				SUB_ARMOR_NECK,
+				SUB_ARMOR_EAR,
+				/*ARMOR-SUB*/
+
+				/*OTHER*/
+				TYPE_METIN,
+				TYPE_YANG,
+				TYPE_SKILLBOOK,
+				TYPE_GIFTBOX,
+				TYPE_BELT,
+				TYPE_POLY,
+				TYPE_RING,
+				SUB_POTION,
+				TYPE_MATERIAL,
+				/*OTHER*/
+
+				EPICKFILTER_MAX
+			};
+
+			enum ESIZE
+			{
+				SMALL,
+				MID,
+				BIG,
+
+				ESIZE_MAX
+			};
+
+		private:
+			bool bPickFilter[EPICKFILTER::EPICKFILTER_MAX];
+			bool bPickSize[ESIZE::ESIZE_MAX];
+
+			bool bModeAll;
+
+			BYTE m_bRefineMin;
+			BYTE m_bRefineMax;
+
+			long m_lLevelMin;
+			long m_lLevelMax;
+		} TPickUpFilter;
+#endif
 
 		typedef struct SResolution
 		{

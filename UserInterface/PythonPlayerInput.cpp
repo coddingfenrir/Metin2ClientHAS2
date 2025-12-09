@@ -43,15 +43,24 @@ void CPythonPlayer::PickCloseMoney()
 
 void CPythonPlayer::PickCloseItem()
 {
-	CInstanceBase * pkInstMain = NEW_GetMainActorPtr();
+	CInstanceBase* pkInstMain = NEW_GetMainActorPtr();
 	if (!pkInstMain)
 		return;
 
 	TPixelPosition kPPosMain;
 	pkInstMain->NEW_GetPixelPosition(&kPPosMain);
 
+#if defined(__BL_PICK_FILTER__)
+	if (CPythonSystem::Instance().TPickUpFilter.IsModeAll())
+	{
+		for (DWORD x : CPythonItem::Instance().GetCloseItemVector(pkInstMain->GetNameString(), kPPosMain))
+			SendClickItemPacket(x);
+		return;
+	}
+#endif
+
 	DWORD dwItemID;
-	CPythonItem& rkItem=CPythonItem::Instance();
+	CPythonItem& rkItem = CPythonItem::Instance();
 	if (!rkItem.GetCloseItem(kPPosMain, &dwItemID, __GetPickableDistance()))
 		return;
 

@@ -1164,8 +1164,8 @@ void CPythonPlayer::SendClickItemPacket(DWORD dwIID)
 	if (dwCurTime >= s_dwNextTCPTime)
 #endif
 	{
-#ifndef ENABLE_NO_PICKUP_LIMIT
-		s_dwNextTCPTime=dwCurTime + 500;
+#if !defined(__BL_PICK_FILTER__)
+		s_dwNextTCPTime = dwCurTime + 500;
 #endif
 
 		const char * c_szOwnerName;
@@ -1187,7 +1187,10 @@ void CPythonPlayer::SendClickItemPacket(DWORD dwIID)
 				return;
 			}
 		}
-
+#if defined(__BL_PICK_FILTER__)
+		if (CPythonSystem::Instance().TPickUpFilter.CanPickItem(dwIID) == false)
+			return;
+#endif
 		CPythonNetworkStream& rkNetStream=CPythonNetworkStream::Instance();
 		rkNetStream.SendItemPickUpPacket(dwIID);
 	}

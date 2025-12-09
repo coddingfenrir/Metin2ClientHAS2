@@ -124,7 +124,9 @@ class CPythonNetworkStream : public CNetworkStream, public CSingleton<CPythonNet
 		bool IsSelectedEmpire();
 
 		void ToggleGameDebugInfo();
-
+#if defined(__BL_PICK_FILTER__)
+		void OpenPickUpWindow();
+#endif
 		void SetMarkServer(const char* c_szAddr, UINT uPort);
 		void ConnectLoginServer(const char* c_szAddr, UINT uPort);
 		void ConnectGameServer(UINT iChrSlot);
