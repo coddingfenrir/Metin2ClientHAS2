@@ -314,18 +314,18 @@ bool CEterPack::DecryptIndexFile()
 
 static DWORD s_adwEterPackKey[] =
 {
-	45129401,
-	92367215,
-	681285731,
-	1710201,
+	1447405988,
+	1798422169,
+	955993769,
+	1215520323
 };
 
 static DWORD s_adwEterPackSecurityKey[] =
 {
-	78952482,
-	527348324,
-	1632942,
-	486274726,
+	569192581,
+	1279389807,
+	1523354206,
+	1312238827
 };
 
 bool CEterPack::EncryptIndexFile()

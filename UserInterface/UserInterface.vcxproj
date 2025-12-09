@@ -230,6 +230,7 @@
     <ClCompile Include="PythonPlayerSkill.cpp" />
     <ClCompile Include="PythonQuest.cpp" />
     <ClCompile Include="PythonSkill.cpp" />
+    <ClCompile Include="CPythonRenderTargetModule.cpp" />
     <ClCompile Include="PythonChat.cpp" />
     <ClCompile Include="PythonChatModule.cpp" />
     <ClCompile Include="PythonExchange.cpp" />
