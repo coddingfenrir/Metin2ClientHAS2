@@ -1541,7 +1541,11 @@ void initapp()
 #else
 	PyModule_AddIntConstant(poModule, "WJ_NEW_DROP_DIALOG", 0);
 #endif
-
+#ifdef ENABLE_HUNTING_SYSTEM
+	PyModule_AddIntConstant(poModule, "ENABLE_HUNTING_SYSTEM", 1);
+#else
+	PyModule_AddIntConstant(poModule, "ENABLE_HUNTING_SYSTEM", 0);
+#endif
 #ifdef ENABLE_SKILL_BOOK_READING
 	PyModule_AddIntConstant(poModule, "ENABLE_SKILL_BOOK_READING", 1);
 #else

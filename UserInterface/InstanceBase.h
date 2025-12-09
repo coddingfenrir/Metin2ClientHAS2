@@ -1156,7 +1156,11 @@ class CInstanceBase
 	protected:
 		DWORD					m_dwDuelMode;
 		DWORD					m_dwEmoticonTime;
-
+	protected:
+		bool m_IsAlwaysRender;
+	public:
+		bool IsAlwaysRender();
+		void SetAlwaysRender(bool val);
 #if defined(WJ_SHOW_MOB_INFO) && defined(ENABLE_SHOW_MOBAIFLAG)
 	public:
 		void					MobInfoAiFlagRefresh();

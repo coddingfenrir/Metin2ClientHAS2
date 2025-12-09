@@ -1689,7 +1689,21 @@ PyObject* netRegisterErrorLog(PyObject* poSelf, PyObject* poArgs)
 
 	return Py_BuildNone();
 }
+#ifdef ENABLE_HUNTING_SYSTEM
+PyObject* netSendHuntingAction(PyObject* poSelf, PyObject* poArgs)
+{
+	int bAction;
+	if (!PyTuple_GetInteger(poArgs, 0, &bAction))
+		return Py_BuildException();
 
+	int dValue;
+	if (!PyTuple_GetInteger(poArgs, 1, &dValue))
+		return Py_BuildException();
+
+	CPythonNetworkStream::Instance().SendHuntingAction(bAction, dValue);
+	return Py_BuildNone();
+}
+#endif
 void initnet()
 {
 	static PyMethodDef s_methods[] =
@@ -1865,6 +1879,9 @@ void initnet()
 #endif
 #if defined(ENABLE_CHEQUE_SYSTEM) && !defined(DISABLE_CHEQUE_DROP)
 		{ "SendGoldChequePacketNew",				netSendChequeDropPacketNew,					METH_VARARGS },
+#endif
+#ifdef ENABLE_HUNTING_SYSTEM
+		{ "SendHuntingAction", netSendHuntingAction, METH_VARARGS },
 #endif
 		{ NULL,										NULL,										NULL },
 	};

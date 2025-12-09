@@ -7,6 +7,7 @@
 #define ENABLE_ENERGY_SYSTEM
 #define ENABLE_DRAGON_SOUL_SYSTEM
 #define ENABLE_NEW_EQUIPMENT_SYSTEM
+#define ENABLE_HUNTING_SYSTEM
 // ### Default Ymir Macros ###
 //////////////////////////////////////////////////////////////////////////
 

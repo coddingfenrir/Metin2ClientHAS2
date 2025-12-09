@@ -170,6 +170,7 @@ void CPythonApplication::RenderGame()
 {
 	if (!PERF_CHECKER_RENDER_GAME)
 	{
+		m_kRenderTargetManager.RenderBackgrounds();
 		float fAspect=m_kWndMgr.GetAspect();
 		float fFarClip=m_pyBackground.GetFarClip();
 
@@ -201,6 +202,7 @@ void CPythonApplication::RenderGame()
 
 		m_pyBackground.SetCharacterDirLight();
 		m_kChrMgr.Render();
+		m_kRenderTargetManager.RenderModels();
 
 		m_pyBackground.SetBackgroundDirLight();
 		m_pyBackground.RenderWater();
@@ -228,6 +230,7 @@ void CPythonApplication::RenderGame()
 	DWORD t1=ELTimer_GetMSec();
 	m_kChrMgr.Deform();
 	DWORD t2=ELTimer_GetMSec();
+	m_kRenderTargetManager.UpdateModels();
 	DWORD t3=ELTimer_GetMSec();
 	m_pyBackground.RenderCharacterShadowToTexture();
 	DWORD t4=ELTimer_GetMSec();
@@ -565,7 +568,10 @@ bool CPythonApplication::Process()
 				rkBG.ReleaseCharacterShadowTexture();
 
 				if (m_pyGraphic.RestoreDevice())
+				{
+					CRenderTargetManager::Instance().CreateRenderTargetTextures();
 					rkBG.CreateCharacterShadowTexture();
+				}
 				else
 					canRender = false;
 			}
@@ -1258,6 +1264,7 @@ void CPythonApplication::Destroy()
 	m_kWndMgr.Destroy();
 
 	CPythonSystem::Instance().SaveConfig();
+	m_kRenderTargetManager.Destroy();
 #if defined(__BL_MULTI_LANGUAGE_ULTIMATE__)
 	m_pySystem.SaveChatFilterSettings();
 #endif

@@ -604,7 +604,17 @@ class CPythonNetworkStream : public CNetworkStream, public CSingleton<CPythonNet
 		void SetGameOnline();
 		void SetGameOffline();
 		BOOL IsGameOnline();
+#ifdef ENABLE_HUNTING_SYSTEM
+	public:
+		bool SendHuntingAction(BYTE bAction, DWORD dValue);
 
+	protected:
+		bool RecvHuntingOpenWindowMain();
+		bool RecvHuntingOpenWindowSelect();
+		bool RecvHuntingOpenWindowReward();
+		bool RecvHuntingUpdate();
+		bool RecvHuntingRandomItems();
+#endif
 	protected:
 		bool CheckPacket(TPacketHeader * pRetHeader);
 
@@ -840,5 +850,6 @@ class CPythonNetworkStream : public CNetworkStream, public CSingleton<CPythonNet
 		void SendShopMoveItem(int srcPos, int destPos);
 #	endif
 #endif
+
 };
 //martysama0134's 2e58d0b8baeb072acdf3afc4a5d1999f

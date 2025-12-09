@@ -146,6 +146,7 @@ namespace UI
 			virtual BOOL	OnMouseRightButtonDoubleClick();
 			virtual BOOL	OnMouseMiddleButtonDown();
 			virtual BOOL	OnMouseMiddleButtonUp();
+			virtual BOOL	RunMouseWheelEvent(long nLen);
 #ifdef ENABLE_MOUSEWHEEL_EVENT
 			virtual BOOL	OnMouseWheel(short wDelta);
 #endif
@@ -387,7 +388,7 @@ namespace UI
 			void SetRotation(float fRotation);
 			void SetRenderingRect(float fLeft, float fTop, float fRight, float fBottom);
 			void SetRenderingMode(int iMode);
-
+			void SetImageClipRect(float fLeft, float fTop, float fRight, float fBottom, bool bIsVertical = false);
 		protected:
 			void OnCreateInstance();
 			void OnDestroyInstance();

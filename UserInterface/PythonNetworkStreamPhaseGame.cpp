@@ -632,6 +632,27 @@ void CPythonNetworkStream::GamePhase()
 			case HEADER_GC_DRAGON_SOUL_REFINE:
 				ret = RecvDragonSoulRefine();
 				break;
+#ifdef ENABLE_HUNTING_SYSTEM
+			case HEADER_GC_HUNTING_OPEN_MAIN:
+				ret = RecvHuntingOpenWindowMain();
+				break;
+
+			case HEADER_GC_HUNTING_OPEN_SELECT:
+				ret = RecvHuntingOpenWindowSelect();
+				break;
+
+			case HEADER_GC_HUNTING_OPEN_REWARD:
+				ret = RecvHuntingOpenWindowReward();
+				break;
+
+			case HEADER_GC_HUNTING_UPDATE:
+				ret = RecvHuntingUpdate();
+				break;
+
+			case HEADER_GC_HUNTING_RECIVE_RAND_ITEMS:
+				ret = RecvHuntingRandomItems();
+				break;
+#endif
 #ifdef ENABLE_NEW_BIOLOG //uzaktan biyo
 			case HEADER_GC_BIOLOG_UPDATE:
 				ret = RecvBiologPacket();
@@ -832,7 +853,82 @@ void CPythonNetworkStream::__InitializeGamePhase()
 
 	m_pInstTarget = NULL;
 }
+#ifdef ENABLE_HUNTING_SYSTEM
+bool CPythonNetworkStream::RecvHuntingOpenWindowMain()
+{
+	TPacketGCOpenWindowHuntingMain packet;
+	if (!Recv(sizeof(packet), &packet))
+		return false;
 
+	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "BINARY_OpenHuntingWindowMain", Py_BuildValue("(iiiiiiiiii)",
+		packet.dLevel, packet.dMonster, packet.dCurCount, packet.dDestCount, packet.dMoneyMin, packet.dMoneyMax, packet.dExpMin, packet.dExpMax, packet.dRaceItem, packet.dRaceItemCount
+	));
+
+	return true;
+}
+
+bool CPythonNetworkStream::SendHuntingAction(BYTE bAction, DWORD dValue)
+{
+	if (!__CanActMainInstance())
+		return true;
+
+	TPacketGCHuntingAction packet;
+	packet.bHeader = HEADER_CG_SEND_HUNTING_ACTION;
+	packet.bAction = bAction;
+	packet.dValue = dValue;
+
+	if (!Send(sizeof(TPacketGCHuntingAction), &packet))
+		return false;
+
+	return SendSequence();
+}
+
+bool CPythonNetworkStream::RecvHuntingOpenWindowSelect()
+{
+	TPacketGCOpenWindowHuntingSelect packet;
+	if (!Recv(sizeof(packet), &packet))
+		return false;
+
+	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "BINARY_OpenHuntingWindowSelect", Py_BuildValue("(iiiiiiiiii)",
+		packet.dLevel, packet.bType, packet.dMonster, packet.dCount, packet.dMoneyMin, packet.dMoneyMax, packet.dExpMin, packet.dExpMax, packet.dRaceItem, packet.dRaceItemCount
+	));
+
+	return true;
+}
+
+bool CPythonNetworkStream::RecvHuntingOpenWindowReward()
+{
+	TPacketGCOpenWindowReward packet;
+	if (!Recv(sizeof(packet), &packet))
+		return false;
+
+	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "BINARY_OpenHuntingWindowReward", Py_BuildValue("(iiiiiii)", packet.dLevel, packet.dReward, packet.dRewardCount, packet.dRandomReward, packet.dRandomRewardCount, packet.dMoney, packet.bExp));
+
+	return true;
+}
+
+bool CPythonNetworkStream::RecvHuntingUpdate()
+{
+	TPacketGCUpdateHunting packet;
+	if (!Recv(sizeof(packet), &packet))
+		return false;
+
+	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "BINARY_UpdateHuntingMission", Py_BuildValue("(i)", packet.dCount));
+
+	return true;
+}
+
+bool CPythonNetworkStream::RecvHuntingRandomItems()
+{
+	TPacketGCReciveRandomItems packet;
+	if (!Recv(sizeof(packet), &packet))
+		return false;
+
+	PyCallClassMemberFunc(m_apoPhaseWnd[PHASE_WINDOW_GAME], "BINARY_HuntingReciveRandomItem", Py_BuildValue("(iii)", packet.bWindow, packet.dItemVnum, packet.dItemCount));
+
+	return true;
+}
+#endif
 void CPythonNetworkStream::Warp(LONG lGlobalX, LONG lGlobalY)
 {
 	CPythonBackground& rkBgMgr=CPythonBackground::Instance();
@@ -4871,4 +4967,5 @@ void CPythonNetworkStream::Discord_Close()
 	Discord_Shutdown();
 }
 #endif
+
 //martysama0134's 2e58d0b8baeb072acdf3afc4a5d1999f

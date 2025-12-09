@@ -57,15 +57,16 @@ void CPythonApplication::OnMouseMiddleButtonUp(int x, int y)
 	if ( CURSOR_MODE_HARDWARE == GetCursorMode())
 		SetCursorVisible(TRUE);
 }
-
 void CPythonApplication::OnMouseWheel(int nLen)
 {
-	CCameraManager& rkCmrMgr=CCameraManager::Instance();
-	CCamera* pkCmrCur=rkCmrMgr.GetCurrentCamera();
-	if (pkCmrCur)
-		pkCmrCur->Wheel(nLen);
+	if (!(UI::CWindowManager::Instance().RunMouseWheelEvent(nLen)))
+	{
+		CCameraManager& rkCmrMgr = CCameraManager::Instance();
+		CCamera* pkCmrCur = rkCmrMgr.GetCurrentCamera();
+		if (pkCmrCur)
+			pkCmrCur->Wheel(nLen);
+	}
 }
-
 void CPythonApplication::OnMouseMove(int x, int y)
 {
 	CCameraManager& rkCmrMgr=CCameraManager::Instance();

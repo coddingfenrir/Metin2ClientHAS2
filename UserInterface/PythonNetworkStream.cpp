@@ -204,6 +204,13 @@ class CMainPacketHeaderMap : public CNetworkPacketHeaderMap
 #ifdef ENABLE_IKASHOP_RENEWAL
 			Set(HEADER_GC_NEW_OFFLINESHOP, CNetworkPacketHeaderMap::TPacketType(sizeof(TPacketGCNewOfflineshop), LARGE_DYNAMIC_SIZE_PACKET));
 #endif
+#ifdef ENABLE_HUNTING_SYSTEM
+			Set(HEADER_GC_HUNTING_OPEN_MAIN, CNetworkPacketHeaderMap::TPacketType(sizeof(TPacketGCOpenWindowHuntingMain), STATIC_SIZE_PACKET));
+			Set(HEADER_GC_HUNTING_OPEN_SELECT, CNetworkPacketHeaderMap::TPacketType(sizeof(TPacketGCOpenWindowHuntingSelect), STATIC_SIZE_PACKET));
+			Set(HEADER_GC_HUNTING_OPEN_REWARD, CNetworkPacketHeaderMap::TPacketType(sizeof(TPacketGCOpenWindowReward), STATIC_SIZE_PACKET));
+			Set(HEADER_GC_HUNTING_UPDATE, CNetworkPacketHeaderMap::TPacketType(sizeof(TPacketGCUpdateHunting), STATIC_SIZE_PACKET));
+			Set(HEADER_GC_HUNTING_RECIVE_RAND_ITEMS, CNetworkPacketHeaderMap::TPacketType(sizeof(TPacketGCReciveRandomItems), STATIC_SIZE_PACKET));
+#endif
 		}
 };
 

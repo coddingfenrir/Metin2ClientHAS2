@@ -133,7 +133,15 @@ enum
 	HEADER_CG_GUILD_SYMBOL_CRC					= 113,
 	HEADER_CG_SCRIPT_SELECT_ITEM				= 114,
 	HEADER_CG_LOGIN4							= 115,
+#ifdef ENABLE_HUNTING_SYSTEM
+		HEADER_GC_HUNTING_OPEN_MAIN = 300,
+		HEADER_GC_HUNTING_OPEN_SELECT = 301,
+		HEADER_GC_HUNTING_OPEN_REWARD = 302,
+		HEADER_GC_HUNTING_UPDATE = 303,
+		HEADER_GC_HUNTING_RECIVE_RAND_ITEMS = 304,
+		HEADER_CG_SEND_HUNTING_ACTION = 305,
 
+#endif
 	HEADER_CG_DRAGON_SOUL_REFINE				= 205,
 	HEADER_CG_STATE_CHECKER						= 206,
 	#ifdef ENABLE_NEW_BIOLOG
@@ -3374,6 +3382,70 @@ typedef struct sBiologGCInformation {
 	BYTE	bChance;
 	int		iTime;
 }tBiologGCInformation;
+#endif
+#ifdef ENABLE_HUNTING_SYSTEM
+typedef struct SPacketCGHuntingAction
+{
+	BYTE	bHeader;
+	BYTE	bAction;
+	DWORD	dValue;
+} TPacketGCHuntingAction;
+
+typedef struct SPacketCGOpenWindowHuntingMain
+{
+	BYTE	bHeader;
+	DWORD	dLevel;
+	DWORD	dMonster;
+	DWORD	dCurCount;
+	DWORD	dDestCount;
+	DWORD	dMoneyMin;
+	DWORD	dMoneyMax;
+	DWORD	dExpMin;
+	DWORD	dExpMax;
+	DWORD	dRaceItem;
+	DWORD	dRaceItemCount;
+} TPacketGCOpenWindowHuntingMain;
+
+typedef struct SPacketCGOpenWindowHuntingSelect
+{
+	BYTE	bHeader;
+	DWORD	dLevel;
+	BYTE	bType;
+	DWORD	dMonster;
+	DWORD	dCount;
+	DWORD	dMoneyMin;
+	DWORD	dMoneyMax;
+	DWORD	dExpMin;
+	DWORD	dExpMax;
+	DWORD	dRaceItem;
+	DWORD	dRaceItemCount;
+} TPacketGCOpenWindowHuntingSelect;
+
+typedef struct SPacketGCOpenWindowReward
+{
+	BYTE	bHeader;
+	DWORD	dLevel;
+	DWORD	dReward;
+	DWORD	dRewardCount;
+	DWORD	dRandomReward;
+	DWORD	dRandomRewardCount;
+	DWORD	dMoney;
+	BYTE	bExp;
+} TPacketGCOpenWindowReward;
+
+typedef struct SPacketGCUpdateHunting
+{
+	BYTE	bHeader;
+	DWORD	dCount;
+} TPacketGCUpdateHunting;
+
+typedef struct SPacketGCReciveRandomItems
+{
+	BYTE	bHeader;
+	BYTE	bWindow;
+	DWORD	dItemVnum;
+	DWORD	dItemCount;
+} TPacketGCReciveRandomItems;
 #endif
 
 #pragma pack(pop)

@@ -41,7 +41,8 @@
 #include "ServerStateChecker.h"
 #include "AbstractApplication.h"
 #include "MovieMan.h"
-
+#include "../eterLib/CRenderTarget.h"
+#include "../eterLib/CRenderTargetManager.h"
 #ifdef ENABLE_ACCE_COSTUME_SYSTEM
 #include "PythonAcce.h"
 #endif
@@ -370,7 +371,7 @@ class CPythonApplication : public CMSApplication, public CInputKeyboard, public 
 		CNetworkDevice				m_netDevice;
 
 		CPythonSystem				m_pySystem;
-
+		CRenderTargetManager		m_kRenderTargetManager;
 		PyObject *					m_poMouseHandler;
 		D3DXVECTOR3					m_v3CenterPosition;
 

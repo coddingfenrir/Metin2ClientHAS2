@@ -120,6 +120,7 @@ namespace UI
 			void		RunMouseRightButtonDoubleClick(long x, long y);
 			void		RunMouseMiddleButtonDown(long x, long y);
 			void		RunMouseMiddleButtonUp(long x, long y);
+			bool		RunMouseWheelEvent(long nLen);
 #ifdef ENABLE_MOUSEWHEEL_EVENT
 			bool		RunMouseWheel(short wDelta);
 #endif
