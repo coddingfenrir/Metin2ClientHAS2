@@ -554,7 +554,7 @@ m_pPreviousCamera(NULL)
 {
 	AddCamera(DEFAULT_PERSPECTIVE_CAMERA);
 	AddCamera(DEFAULT_ORTHO_CAMERA);
-
+	AddCamera(SHOPDECO_CAMERA);
 	SetCurrentCamera(DEFAULT_PERSPECTIVE_CAMERA);
 }
 

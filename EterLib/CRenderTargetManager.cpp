@@ -54,9 +54,6 @@ void CRenderTargetManager::ReleaseRenderTargetTextures()
 	for (const auto& elem : m_renderTargets)
 		elem.second->ReleaseTextures();
 }
-void initRenderTarget()
-{
-}
 
 bool CRenderTargetManager::CreateRenderTarget(const uint8_t index, const int width, const int height)
 {

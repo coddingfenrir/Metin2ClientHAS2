@@ -100,7 +100,7 @@ PyObject* renderTargetSetBackground(PyObject* poSelf, PyObject* poArgs)
 	if (!PyTuple_GetByte(poArgs, 0, &index))
 		return Py_BadArgument();
 
-	char * szPathName;
+	char* szPathName;
 	if (!PyTuple_GetString(poArgs, 1, &szPathName))
 		return Py_BadArgument();
 
