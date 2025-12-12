@@ -142,6 +142,9 @@ enum
 		HEADER_CG_SEND_HUNTING_ACTION = 305,
 
 #endif
+#ifdef ENABLE_AV_SYSTEM
+	HEADER_GC_AV_MATRIX = 399,
+#endif
 	HEADER_CG_DRAGON_SOUL_REFINE				= 205,
 	HEADER_CG_STATE_CHECKER						= 206,
 	#ifdef ENABLE_NEW_BIOLOG
@@ -317,7 +320,7 @@ enum
 	HEADER_GC_SPECIFIC_EFFECT					= 208,
 	HEADER_GC_DRAGON_SOUL_REFINE				= 209,
 	HEADER_GC_RESPOND_CHANNELSTATUS				= 210,
-
+	HEADER_GC_AV_SISTEMI =	399,
 
 	HEADER_GC_KEY_AGREEMENT_COMPLETED			= 0xfa, // _IMPROVED_PACKET_ENCRYPTION_
 	HEADER_GC_KEY_AGREEMENT						= 0xfb, // _IMPROVED_PACKET_ENCRYPTION_
@@ -3390,6 +3393,13 @@ typedef struct SPacketCGHuntingAction
 	BYTE	bAction;
 	DWORD	dValue;
 } TPacketGCHuntingAction;
+
+typedef struct SPacketGCAvSistemi {
+	BYTE header;        
+	DWORD mobVnum;      
+	DWORD curCount;     
+	DWORD totalCount;   
+} TPacketGCAvSistemi;
 
 typedef struct SPacketCGOpenWindowHuntingMain
 {

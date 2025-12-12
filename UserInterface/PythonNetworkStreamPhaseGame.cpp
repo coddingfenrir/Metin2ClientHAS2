@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "PythonNetworkStream.h"
 #include "Packet.h"
 
@@ -653,6 +653,13 @@ void CPythonNetworkStream::GamePhase()
 				ret = RecvHuntingRandomItems();
 				break;
 #endif
+#ifdef ENABLE_AV_SYSTEM
+			case HEADER_GC_AV_MATRIX:
+				ret = RecvAvMatrix();
+				break;
+
+
+#endif 
 #ifdef ENABLE_NEW_BIOLOG //uzaktan biyo
 			case HEADER_GC_BIOLOG_UPDATE:
 				ret = RecvBiologPacket();
@@ -929,6 +936,22 @@ bool CPythonNetworkStream::RecvHuntingRandomItems()
 	return true;
 }
 #endif
+#ifdef ENABLE_AV_SYSTEM
+bool CPythonNetworkStream::RecvAvMatrix()
+{
+	TPacketGCAvSistemi p;
+	if (!Recv(sizeof(p), &p))
+		return false;
+
+	PyCallClassMemberFunc(
+		m_apoPhaseWnd[PHASE_WINDOW_GAME],
+		"BINARY_AvSetMatrix",
+		Py_BuildValue("(iii)", p.mobVnum, p.curCount, p.totalCount)
+	);
+	return true;
+}
+#endif
+
 void CPythonNetworkStream::Warp(LONG lGlobalX, LONG lGlobalY)
 {
 	CPythonBackground& rkBgMgr=CPythonBackground::Instance();
