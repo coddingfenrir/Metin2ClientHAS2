@@ -132,7 +132,6 @@
 #define WJ_SPLIT_INVENTORY_SYSTEM
 #define WJ_NEW_DROP_DIALOG
 #define ENABLE_NEW_BIOLOG	// Uzaktan biolog
-#define ENABLE_AV_SYSTEM
 #define ENABLE_COLLECT_QUEST_SYSTEM	// Collect Quest System
 
 //martysama0134's cc449580f8a0ea79d66107125c7ee3d3

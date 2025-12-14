@@ -615,9 +615,6 @@ class CPythonNetworkStream : public CNetworkStream, public CSingleton<CPythonNet
 		bool RecvHuntingUpdate();
 		bool RecvHuntingRandomItems();
 #endif
-#ifdef ENABLE_AV_SYSTEM
-		bool RecvAvMatrix();
-#endif
 	protected:
 		bool CheckPacket(TPacketHeader * pRetHeader);
 

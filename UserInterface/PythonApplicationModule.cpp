@@ -1508,11 +1508,7 @@ void initapp()
 #else
 	PyModule_AddIntConstant(poModule, "ENABLE_TARGET_INFORMATION_SYSTEM", 0);
 #endif
-#ifdef ENABLE_AV_SYSTEM
-	PyModule_AddIntConstant(poModule, "ENABLE_AV_SYSTEM", 1);
-#else
-	PyModule_AddIntConstant(poModule, "ENABLE_AV_SYSTEM", 0);
-#endif
+
 #ifdef ENABLE_MINIMAP_TELEPORT_CLICK
 	PyModule_AddIntConstant(poModule, "ENABLE_MINIMAP_TELEPORT_CLICK", 1);
 #else
